@@ -1,0 +1,66 @@
+import random
+
+g = 0
+
+def print_board(board):
+    for i in range(8):
+        for j in range(8):
+            if board[i] == j:
+                print("Q", end=" ")
+            else:
+                print("_", end=" ")
+        print()
+    print()
+
+def heuristic(board):
+    h = 0
+    for i in range(8):
+        for j in range(i + 1, 8):
+            if board[i] == board[j] or abs(board[i] - board[j]) == j - i:
+                h += 1
+    return h
+
+def solve_eight_queens(start):
+    global g
+    g += 1
+    min_heuristic = heuristic(start)
+    
+    if g > 1:
+        print_board(start)
+    
+    if min_heuristic == 0:
+        print("Solved in {} moves".format(g))
+        return True
+    
+    best_board = None
+    best_heuristic = float('inf')
+    
+    for row in range(8):
+        for col in range(8):
+            if start[row] != col:
+                new_board = start[:]
+                new_board[row] = col
+                h = heuristic(new_board)
+                if h < best_heuristic:
+                    best_heuristic = h
+                    best_board = new_board
+
+    if best_board:
+        return solve_eight_queens(best_board)
+
+    return False
+
+def main():
+    global g
+    start = [-1] * 8
+    print_board(start)
+    
+    if solve_eight_queens(start):
+        print("Solved in {} moves".format(g))
+    else:
+        print("Solution not found")
+
+if __name__ == '__main__':
+    main()
+ 
+  

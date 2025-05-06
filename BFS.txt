@@ -1,0 +1,53 @@
+from collections import deque
+
+graph = {}
+
+n = int(input("Enter number of vertices: "))
+
+vertices = []
+for i in range(n):
+    vertex = input(f"Enter name of vertex {i+1}: ")
+    vertices.append(vertex)
+    graph[vertex] = []
+
+e = int(input("Enter number of edges: "))
+
+for i in range(e):
+    edge = input(f"Enter edge {i+1} (format: vertex1 vertex2): ")
+    u, v = edge.split()
+
+    # Add both directions
+    if u in graph and v in graph:
+        graph[u].append(v)
+        graph[v].append(u)
+    else:
+        print(f"Invalid edge: {u} or {v} not found!")
+
+# Step 6: BFS Function
+def bfs(graph, start, visited=None, queue=None):
+    if visited is None:
+        visited = set()
+    if queue is None:
+        queue = deque()
+
+    visited.add(start)
+    queue.append(start)
+
+    while queue:
+        vertex = queue.popleft()
+        print(vertex, end=' ')
+
+        for neighbor in graph[vertex]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+
+
+start_vertex = input("Enter starting vertex for BFS: ")
+
+# Step 8: Run BFS
+print("BFS Traversal:")
+if start_vertex in graph:
+    bfs(graph, start_vertex)
+else:
+    print("Invalid starting vertex!")

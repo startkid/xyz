@@ -1,0 +1,70 @@
+class Graph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = []
+
+    def addEdge(self, u, v, w):
+        heuristic = round(1 / w, 4)  # Heuristic: inverse of weight
+        self.graph.append([u, v, w, heuristic])
+
+    def find(self, parent, i):
+        if parent[i] != i:
+            parent[i] = self.find(parent, parent[i])
+        return parent[i]
+
+    def union(self, parent, rank, x, y):
+        if rank[x] < rank[y]:
+            parent[x] = y
+        elif rank[x] > rank[y]:
+            parent[y] = x
+        else:
+            parent[y] = x
+            rank[x] += 1
+
+    def KruskalMST(self):
+        result = [] 
+        i = 0 
+        e = 0
+
+        self.graph = sorted(self.graph, key=lambda item: item[2])
+
+        print("\nAll Edges with Heuristic (1/weight):")
+        for u, v, w, h in self.graph:
+            print(f"{u} -- {v} == {w}, Heuristic: {h}")
+
+        max_vertex = 0
+        for edge in self.graph:
+            max_vertex = max(max_vertex, edge[0], edge[1])
+
+        parent = [i for i in range(max_vertex + 1)]
+        rank = [0] * (max_vertex + 1)
+
+        while e < self.V - 1 and i < len(self.graph):
+            u, v, w, h = self.graph[i]
+            i += 1
+            x = self.find(parent, u)
+            y = self.find(parent, v)
+
+            if x != y:
+                e += 1
+                result.append([u, v, w])
+                self.union(parent, rank, x, y)
+
+        minimumCost = sum([w for _, _, w in result])
+        print("\nEdges in the constructed MST:")
+        for u, v, w in result:
+            print(f"{u} -- {v} == {w}")
+        print("Minimum Spanning Tree cost:", minimumCost)
+
+
+if __name__ == '__main__':
+    vertices = int(input("Enter the number of vertices: "))
+    g = Graph(vertices)
+    edges = int(input("Enter the number of edges: "))
+    print("Enter the edges (u v w):")
+    
+    for _ in range(edges):
+        u, v, w = map(int, input().split())
+        g.addEdge(u, v, w)
+
+    g.KruskalMST()

@@ -1,0 +1,53 @@
+def greedy_best_first_search(graph, source, goal, heuristic):
+    visited = set()
+    path = []
+    current = source
+
+    while current != goal:
+        print(f"Visiting: {current}")
+        visited.add(current)
+        path.append(current)
+
+        # Get all unvisited neighbors
+        neighbors = [n for n in graph[current] if n not in visited]
+        if not neighbors:
+            print("No path found!")
+            return path
+
+        # Choose neighbor with lowest heuristic h(n)
+        current = min(neighbors, key=lambda node: heuristic.get(node, float('inf')))
+
+    path.append(goal)
+    print(f"Goal {goal} reached!")
+    return path
+
+
+graph = {}
+n = int(input("Enter the number of edges: "))
+for _ in range(n):
+    edge = input("Enter edge (source destination weight): ").split()
+    source, destination, weight = edge[0], edge[1], int(edge[2])
+    
+    if source not in graph:
+        graph[source] = {}
+    graph[source][destination] = weight
+
+    # Ensure destination node exists
+    if destination not in graph:
+        graph[destination] = {}
+
+# --- Get Heuristic Values ---
+heuristic = {}
+print("\nEnter heuristic values (node heuristic):")
+for node in graph:
+    h = int(input(f"Heuristic for {node}: "))
+    heuristic[node] = h
+
+# --- Start Search ---
+source = input("Enter the source node: ")
+goal = input("Enter the goal node: ")
+
+path = greedy_best_first_search(graph, source, goal, heuristic)
+
+print("\nPath taken:")
+print(" -> ".join(path))

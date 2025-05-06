@@ -1,0 +1,39 @@
+import time
+
+class CustomerSupportChatbot:
+    def __init__(self):
+        self.responses = {
+            "hello": "Hi there! How can I help you today?",
+            "hi": "Hello! How may I assist you?",
+            "order": "You can track your order from your account > Orders section.",
+            "return": "To return a product, please go to 'My Orders' and click on 'Return Item'.",
+            "refund": "Refunds are processed within 5-7 business days after item return.",
+            "payment": "We accept Credit Card, UPI, Net Banking and Cash on Delivery.",
+            "delivery": "Standard delivery takes 3-5 working days.",
+            "bye": "Thank you for contacting us. Have a great day!",
+            "thanks": "You're welcome! 😊",
+        }
+
+    def greet_user(self):
+        print("🤖 Chatbot: Hello! Welcome to XYZ Customer Support.")
+        time.sleep(1)
+        print("🤖 Chatbot: You can ask me anything about your order, refund, delivery, etc.")
+
+    def chat(self):
+        self.greet_user()
+        while True:
+            user_input = input("👤 You: ").lower().strip()
+            found = False
+            for keyword in self.responses:
+                if keyword in user_input:
+                    print(f"🤖 Chatbot: {self.responses[keyword]}")
+                    found = True
+                    break
+            if not found:
+                print("🤖 Chatbot: I'm sorry, I don't understand that. Let me connect you with a human agent.")
+            if "bye" in user_input or "exit" in user_input:
+                break
+
+# Run the chatbot
+chatbot = CustomerSupportChatbot()
+chatbot.chat()

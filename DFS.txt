@@ -1,0 +1,40 @@
+graph = {}
+n = int(input("Enter number of vertices: "))
+
+vertices = []
+for i in range(n):
+    vertex = input(f"Enter name of vertex {i+1}: ")
+    vertices.append(vertex)
+    graph[vertex] = [] 
+
+e = int(input("Enter number of edges: "))
+
+for i in range(e):
+    edge = input(f"Enter edge {i+1} (format: vertex1 vertex2): ")
+    u, v = edge.split() 
+
+   
+    if u in graph and v in graph:
+        graph[u].append(v)  
+        graph[v].append(u) 
+    else:
+        print(f"Invalid edge: {u} or {v} does not exist in vertices!")
+
+
+def dfs(graph, vertex, visited):
+    if vertex not in visited:
+        print(vertex, end=" ") 
+        visited.add(vertex)  
+
+        for neighbor in graph[vertex]:
+            dfs(graph, neighbor, visited)
+
+
+start = input("Enter starting vertex for DFS: ")
+print("DFS traversal:")
+
+visited = set()
+if start in graph:
+    dfs(graph, start, visited)
+else:
+    print("Invalid starting vertex!")

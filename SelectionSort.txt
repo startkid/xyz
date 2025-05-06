@@ -1,0 +1,23 @@
+def heuristic(arr):
+    sorted_arr = sorted(arr)
+    mismatch_count = sum(1 for a, b in zip(arr, sorted_arr) if a != b)
+    return mismatch_count
+
+def selectionSort(arr):
+    n = len(arr)
+    print(f"Initial array: {arr}")
+    print(f"Heuristic: {heuristic(arr)}")
+    for i in range(n):
+        min_index = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_index]:
+                min_index = j
+        if i != min_index:
+            arr[i], arr[min_index] = arr[min_index], arr[i]
+        print(f"After step {i + 1}: {arr}, Heuristic: {heuristic(arr)}")
+    return arr
+
+# Input from user
+arr = list(map(int, input("Enter the array elements separated by space: ").split()))
+sorted_arr = selectionSort(arr)
+print(f"Sorted array: {sorted_arr}")

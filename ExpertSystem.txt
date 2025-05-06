@@ -1,0 +1,67 @@
+import pandas as pd
+
+class ExpertSystem:
+    def __init__(self, file_path):
+        self.df = pd.read_csv(file_path)
+        self.symptoms = self.df.columns[:-2] 
+        self.disease_col = self.df.columns[-2]  
+        self.precautions_col = self.df.columns[-1]  
+
+    def greet_user(self):
+        print("👋 Hello! I'm your virtual medical assistant.")
+        print("I can help you identify possible diseases based on your symptoms.")
+        print("Let's get started! 😊")
+
+    def ask_for_symptoms(self):
+        user_input = {}
+        print("\nPlease answer the following questions with '1' for 'Yes' or '0' for 'No'.")
+        for symptom in self.symptoms:
+            response = input(f"Do you have {symptom}? (1 for Yes, 0 for No): ").strip()
+            if response in ['1', '0']:
+                user_input[symptom] = int(response)
+            else:
+                print(f"⚠️ Invalid input for {symptom}. Please enter '1' or '0'.")
+                return self.ask_for_symptoms()  # Retry if invalid input is provided
+        return user_input
+
+    def diagnose(self, user_input):
+        invalid_symptoms = [symptom for symptom in user_input if symptom not in self.symptoms]
+        
+        if invalid_symptoms:
+            print(f"❌ Invalid symptom(s): {', '.join(invalid_symptoms)}")
+            return
+        
+        match = self.df.copy()
+        for symptom, value in user_input.items():
+            match = match[match[symptom] == value]
+
+        if match.empty:
+            print("\n⚠️ I'm sorry, but no matching disease was found. Please consult a doctor for further advice.")
+        else:
+            print("\n✅ Based on your symptoms, I found the following possible diseases:")
+            disease_counts = match[self.disease_col].value_counts()
+            for disease, count in disease_counts.items():
+                print(f"- {disease}: {count} matches")
+
+            user_disease = input("\nPlease type your disease from the options above: ").strip()
+
+            disease_match = match[match[self.disease_col] == user_disease]
+            if not disease_match.empty:
+                precautions = disease_match[self.precautions_col].iloc[0]
+                print("\n⚠️ Precautions for your disease:")
+                for precaution in precautions.split(";"):
+                    print(f"   - {precaution.strip()}")
+            else:
+                print(f"⚠️ No precautions available for {user_disease}. Please consult a doctor.")
+
+    def get_symptom_list(self):
+        return list(self.symptoms)
+
+system = ExpertSystem(r"C:\\Users\\Aishwarya\\Downloads\\medical_dataset.csv")  # Replace with the correct path
+
+system.greet_user()
+
+user_input = system.ask_for_symptoms()
+
+print("\nDiagnosing based on your symptoms...")
+system.diagnose(user_input)

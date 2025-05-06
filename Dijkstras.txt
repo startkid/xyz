@@ -1,0 +1,60 @@
+import sys
+
+class Graph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = [[0 for _ in range(vertices)] for _ in range(vertices)]
+        self.heuristic = [0] * vertices  # Heuristic values for each vertex
+
+    def printSolution(self, dist):
+        print("\nVertex \tEstimated Total Cost from Source (f(n))")
+        for node in range(self.V):
+            fn = dist[node] + self.heuristic[node]
+            print(f"{node} \t {fn}")
+
+    def minDistance(self, dist, sptSet):
+        min_val = sys.maxsize
+        min_index = -1
+        for u in range(self.V):
+            if not sptSet[u] and (dist[u] + self.heuristic[u]) < min_val:
+                min_val = dist[u] + self.heuristic[u]
+                min_index = u
+        return min_index
+
+    def dijkstra(self, src):
+        dist = [sys.maxsize] * self.V
+        dist[src] = 0
+        sptSet = [False] * self.V
+
+        for _ in range(self.V):
+            x = self.minDistance(dist, sptSet)
+            if x == -1:
+                break
+            sptSet[x] = True
+
+            for y in range(self.V):
+                if self.graph[x][y] > 0 and not sptSet[y] and \
+                   dist[y] > dist[x] + self.graph[x][y]:
+                    dist[y] = dist[x] + self.graph[x][y]
+
+        self.printSolution(dist)
+
+
+if __name__ == "__main__":
+    
+    vertices = int(input("Enter the number of vertices: "))
+    graph = []
+    print("Enter the adjacency matrix (0 for no edge):")
+    for i in range(vertices):
+        row = list(map(int, input(f"Row {i}: ").split()))
+        graph.append(row)
+
+    g = Graph(vertices)
+    g.graph = graph
+
+    print("\nEnter heuristic values for each vertex:")
+    for i in range(vertices):
+        g.heuristic[i] = int(input(f"Heuristic for vertex {i}: "))
+
+    src = int(input("Enter the source vertex: "))
+    g.dijkstra(src)
