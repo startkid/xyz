@@ -42,6 +42,22 @@ def bfs(graph, start, visited=None, queue=None):
                 visited.add(neighbor)
                 queue.append(neighbor)
 
+def bfs_recursive(graph, queue, visited):
+    if not queue:
+        return  # Base case: stop when queue is empty
+
+    vertex = queue.popleft()
+    print(vertex, end=' ')
+    
+    for neighbor in graph[vertex]:
+        if neighbor not in visited:
+            visited.add(neighbor)
+            queue.append(neighbor)
+
+    # Recursive call for next vertex in queue
+    bfs_recursive(graph, queue, visited)
+
+
 
 start_vertex = input("Enter starting vertex for BFS: ")
 
