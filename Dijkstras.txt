@@ -1,60 +1,112 @@
 import sys
 
-class Graph:
+# -------- Kruskal’s Algorithm -------
+class KruskalGraph:
     def __init__(self, vertices):
         self.V = vertices
-        self.graph = [[0 for _ in range(vertices)] for _ in range(vertices)]
-        self.heuristic = [0] * vertices  # Heuristic values for each vertex
+        self.edges = []
+        self.heuristics = {}
 
-    def printSolution(self, dist):
-        print("\nVertex \tEstimated Total Cost from Source (f(n))")
-        for node in range(self.V):
-            fn = dist[node] + self.heuristic[node]
-            print(f"{node} \t {fn}")
+    def add_edge(self, u, v, w, h):
+        self.edges.append([u, v, w])
+        self.heuristics[(u, v)] = h
+        self.heuristics[(v, u)] = h
 
-    def minDistance(self, dist, sptSet):
-        min_val = sys.maxsize
-        min_index = -1
-        for u in range(self.V):
-            if not sptSet[u] and (dist[u] + self.heuristic[u]) < min_val:
-                min_val = dist[u] + self.heuristic[u]
-                min_index = u
-        return min_index
+    def find(self, parent, i):
+        if parent[i] != i:
+            parent[i] = self.find(parent, parent[i])
+        return parent[i]
 
-    def dijkstra(self, src):
-        dist = [sys.maxsize] * self.V
-        dist[src] = 0
-        sptSet = [False] * self.V
+    def union(self, parent, rank, x, y):
+        if rank[x] < rank[y]:
+            parent[x] = y
+        elif rank[x] > rank[y]:
+            parent[y] = x
+        else:
+            parent[y] = x
+            rank[x] += 1
 
-        for _ in range(self.V):
-            x = self.minDistance(dist, sptSet)
-            if x == -1:
+    def kruskal_mst(self):
+        self.edges.sort(key=lambda x: x[2] + self.heuristics.get((x[0], x[1]), 0))
+        parent = list(range(self.V))
+        rank = [0] * self.V
+        result = []
+        cost = 0
+        for u, v, w in self.edges:
+            x = self.find(parent, u)
+            y = self.find(parent, v)
+            if x != y:
+                self.union(parent, rank, x, y)
+                result.append((u, v, w))
+                cost += w
+            if len(result) == self.V - 1:
                 break
-            sptSet[x] = True
 
-            for y in range(self.V):
-                if self.graph[x][y] > 0 and not sptSet[y] and \
-                   dist[y] > dist[x] + self.graph[x][y]:
-                    dist[y] = dist[x] + self.graph[x][y]
-
-        self.printSolution(dist)
+        print("\nKruskal's MST:")
+        for u, v, w in result:
+            print(f"{u} - {v} : {w}")
+        print("Total Cost:", cost)
 
 
-if __name__ == "__main__":
-    
-    vertices = int(input("Enter the number of vertices: "))
-    graph = []
-    print("Enter the adjacency matrix (0 for no edge):")
-    for i in range(vertices):
-        row = list(map(int, input(f"Row {i}: ").split()))
-        graph.append(row)
+# -------- Greedy Best First Search (Heuristic-based) -------
+class GreedySearchGraph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = [[0] * vertices for _ in range(vertices)]
+        self.heuristic = [0] * vertices
 
-    g = Graph(vertices)
-    g.graph = graph
+    def greedy_best_first_search(self, src, goal):
+        visited = [False] * self.V
+        current = src
+        path = [current]
+        visited[current] = True
 
-    print("\nEnter heuristic values for each vertex:")
-    for i in range(vertices):
-        g.heuristic[i] = int(input(f"Heuristic for vertex {i}: "))
+        while current != goal:
+            min_h = sys.maxsize
+            next_node = -1
+            for neighbor in range(self.V):
+                if self.graph[current][neighbor] > 0 and not visited[neighbor]:
+                    if self.heuristic[neighbor] < min_h:
+                        min_h = self.heuristic[neighbor]
+                        next_node = neighbor
+            if next_node == -1:
+                print("\nNo path found!")
+                return
+            current = next_node
+            path.append(current)
+            visited[current] = True
 
-    src = int(input("Enter the source vertex: "))
-    g.dijkstra(src)
+        print("\nGreedy Best First Search Path:")
+        print(" -> ".join(map(str, path)))
+
+
+# -------- Main Program -------
+print("Name: Sakshi Malusare")
+print("Roll No: TACO22150")
+print("\nThis program runs Kruskal's MST and Greedy Best First Search with heuristics.")
+
+# --- Input Section --
+V = int(input("\nEnter number of vertices: "))
+E = int(input("Enter number of edges: "))
+
+k_graph = KruskalGraph(V)
+g_graph = GreedySearchGraph(V)
+
+print("\nEnter edges (format: u v weight heuristic):")
+for _ in range(E):
+    u, v, w, h = map(int, input().split())
+    k_graph.add_edge(u, v, w, h)
+    g_graph.graph[u][v] = w
+    g_graph.graph[v][u] = w  # undirected
+
+print("\nEnter heuristic value for each vertex:")
+for i in range(V):
+    h = int(input(f"Heuristic for vertex {i}: "))
+    g_graph.heuristic[i] = h
+
+src = int(input("\nEnter source vertex for Greedy Best First Search: "))
+goal = int(input("Enter goal vertex for Greedy Best First Search: "))
+
+# --- Run Algorithms --
+k_graph.kruskal_mst()
+g_graph.greedy_best_first_search(src, goal)
