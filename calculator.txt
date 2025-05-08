@@ -1,0 +1,25 @@
+public class SimpleCalculator {
+
+    public static Integer add(Integer a, Integer b) {
+        return a + b;
+    }
+
+    public static Integer subtract(Integer a, Integer b) {
+        return a - b;
+    }
+
+    public static Integer multiply(Integer a, Integer b) {
+        return a * b;
+    }
+
+    public static Decimal divide(Integer a, Integer b) {
+       
+        return a / b;
+    }
+}
+
+
+System.debug('Add: ' + SimpleCalculator.add(10, 5));
+System.debug('Subtract: ' + SimpleCalculator.subtract(10, 5));
+System.debug('Multiply: ' + SimpleCalculator.multiply(10, 5));
+System.debug('Divide (valid): ' + SimpleCalculator.divide(10, 5));
