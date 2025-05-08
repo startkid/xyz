@@ -46,8 +46,9 @@ def movetile(start, goal):
     emptyat = start.index(-1)
     row = emptyat // 3
     col = emptyat % 3
+
     t1, t2, t3, t4 = start[:], start[:], start[:], start[:]
-    f1, f2, f3, f4 = float('inf'), float('inf'), float('inf'), float('inf')
+    f1 = f2 = f3 = f4 = float('inf')
 
     if col - 1 >= 0:
         moveleft(t1, emptyat)
@@ -88,16 +89,18 @@ def main():
     global g
     start = []
     goal = []
+
+    print("Enter the start state (Enter -1 for empty):")
     for i in range(9):
-        start.append(int(input()))
+        start.append(int(input(f"Element {i + 1}: ")))
 
     print("Enter the goal state (Enter -1 for empty):")
     for i in range(9):
-        goal.append(int(input()))
+        goal.append(int(input(f"Element {i + 1}: ")))
 
+    print("\nInitial Board:")
     print_board(start)
 
-    # To check if solvable
     if solvable(start):
         solveEight(start, goal)
     else:
@@ -105,5 +108,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
- 
