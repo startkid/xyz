@@ -1,23 +1,56 @@
-def heuristic(arr):
-    sorted_arr = sorted(arr)
-    mismatch_count = sum(1 for a, b in zip(arr, sorted_arr) if a != b)
-    return mismatch_count
+import heapq
 
-def selectionSort(arr):
+# 1. Selection Sort using Greedy Strategy
+def greedy_selection_sort(arr):
     n = len(arr)
-    print(f"Initial array: {arr}")
-    print(f"Heuristic: {heuristic(arr)}")
     for i in range(n):
-        min_index = i
-        for j in range(i + 1, n):
-            if arr[j] < arr[min_index]:
-                min_index = j
-        if i != min_index:
-            arr[i], arr[min_index] = arr[min_index], arr[i]
-        print(f"After step {i + 1}: {arr}, Heuristic: {heuristic(arr)}")
+        min_idx = i
+        for j in range(i+1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        # Greedy step: swap minimum with current
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
     return arr
 
-# Input from user
-arr = list(map(int, input("Enter the array elements separated by space: ").split()))
-sorted_arr = selectionSort(arr)
-print(f"Sorted array: {sorted_arr}")
+# 2. Minimum Spanning Tree (MST) using Prim's Algorithm with Heuristic
+def prims_greedy_mst(graph, start):
+    visited = set()
+    mst = []
+    min_heap = [(0, start, -1)]  # (weight, to_node, from_node)
+    while min_heap and len(visited) < len(graph):
+        weight, u, parent = heapq.heappop(min_heap)
+        if u in visited:
+            continue
+        visited.add(u)
+        if parent != -1:
+            mst.append((parent, u, weight))
+        for v, w in graph[u]:
+            if v not in visited:
+                heapq.heappush(min_heap, (w, v, u))
+    return mst
+
+# Main program to run both algorithms
+# 1. Selection Sort - Taking input from user
+print("Heuristic: select the minimum element in the unsorted part")
+arr = list(map(int, input("Enter numbers to sort (space separated): ").split()))
+sorted_arr = greedy_selection_sort(arr)
+print("\nSorted array using greedy selection sort:", sorted_arr)
+
+# 2. Minimum Spanning Tree using Prim's algorithm - Taking graph input from user
+print("Heuristic: add edges with min weight greedily")
+n = int(input("\nEnter number of nodes for MST: "))
+graph = {i: [] for i in range(n)}
+
+# Take edges as input (from, to, weight)
+m = int(input(f"Enter number of edges for the graph (max {n*(n-1)//2}): "))
+for _ in range(m):
+    u, v, w = map(int, input("Enter edge (from to weight): ").split())
+    graph[u].append((v, w))
+    graph[v].append((u, w))  # Since it's undirected
+
+start_node = int(input("\nEnter the start node for MST (0 to {0}): ".format(n-1)))
+
+mst = prims_greedy_mst(graph, start_node)
+print("\nMinimum Spanning Tree (MST):")
+for u, v, weight in mst:
+    print(f"Edge: ({u}, {v}) with weight {weight}")
