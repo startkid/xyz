@@ -1,0 +1,69 @@
+import heapq
+
+# 1. Dijkstra's Algorithm (Single-Source Shortest Path Problem)
+def dijkstra(graph, start):
+    n = len(graph)
+    distances = {node: float('inf') for node in range(n)}
+    distances[start] = 0
+    pq = [(0, start)]  # (distance, node)
+    
+    while pq:
+        current_distance, current_node = heapq.heappop(pq)
+        if current_distance > distances[current_node]:
+            continue
+        
+        for neighbor, weight in graph[current_node]:
+            distance = current_distance + weight
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(pq, (distance, neighbor))
+    
+    return distances
+
+# 2. Job Scheduling Problem (Maximizing Profit)
+def job_scheduling(jobs):
+    # Sort jobs by descending profit
+    jobs.sort(key=lambda x: x[2], reverse=True)
+    scheduled_jobs = []
+    last_finish_time = -1
+    
+    for job in jobs:
+        start, finish, profit = job
+        if start >= last_finish_time:
+            scheduled_jobs.append(job)
+            last_finish_time = finish
+    
+    return scheduled_jobs
+
+# Main program to run both algorithms
+
+# 1. Single-Source Shortest Path (Dijkstra's Algorithm) - Input
+print("\n--- Single-Source Shortest Path (Dijkstra's Algorithm) ---")
+n_nodes = int(input("Enter number of nodes in the graph: "))
+graph = {i: [] for i in range(n_nodes)}
+m_edges = int(input(f"Enter number of edges (maximum {n_nodes*(n_nodes-1)//2}): "))
+print("Enter the edges in the format (start_node, end_node, weight):")
+
+for _ in range(m_edges):
+    u, v, w = map(int, input().split())
+    graph[u].append((v, w))
+    graph[v].append((u, w))  # Since it's undirected
+
+start_node = int(input("Enter the start node for Dijkstra's Algorithm: "))
+distances = dijkstra(graph, start_node)
+print(f"Shortest distances from node {start_node}: {distances}")
+
+# 2. Job Scheduling Problem - Input
+print("\n--- Job Scheduling Problem (Maximizing Profit) ---")
+n_jobs = int(input("Enter number of jobs: "))
+jobs = []
+print("Enter the jobs in the format (start_time, finish_time, profit):")
+
+for _ in range(n_jobs):
+    start, finish, profit = map(int, input().split())
+    jobs.append((start, finish, profit))
+
+scheduled_jobs = job_scheduling(jobs)
+print("\nScheduled Jobs (start_time, finish_time, profit):")
+for job in scheduled_jobs:
+    print(job)
